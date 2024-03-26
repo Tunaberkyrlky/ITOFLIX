@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1706.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ITOFLIX", "ITOFLIX\ITOFLIX.csproj", "{6AA8AD9E-681E-4559-83C6-CFC151B1BBEB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6AA8AD9E-681E-4559-83C6-CFC151B1BBEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6AA8AD9E-681E-4559-83C6-CFC151B1BBEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6AA8AD9E-681E-4559-83C6-CFC151B1BBEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6AA8AD9E-681E-4559-83C6-CFC151B1BBEB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {937A55FE-B369-48BC-80AF-DB733F56D800}
+	EndGlobalSection
+EndGlobal
