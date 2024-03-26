@@ -25,22 +25,22 @@ namespace ITOFLIX.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Category>>> GetCategory()
         {
-          if (_context.Category == null)
+          if (_context.Categories == null)
           {
               return NotFound();
           }
-            return await _context.Category.ToListAsync();
+            return await _context.Categories.ToListAsync();
         }
 
         // GET: api/Categories/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Category>> GetCategory(short id)
         {
-          if (_context.Category == null)
+          if (_context.Categories == null)
           {
               return NotFound();
           }
-            var category = await _context.Category.FindAsync(id);
+            var category = await _context.Categories.FindAsync(id);
 
             if (category == null)
             {
@@ -86,11 +86,11 @@ namespace ITOFLIX.Controllers
         [HttpPost]
         public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-          if (_context.Category == null)
+          if (_context.Categories == null)
           {
               return Problem("Entity set 'ITOFLIXContext.Category'  is null.");
           }
-            _context.Category.Add(category);
+            _context.Categories.Add(category);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetCategory", new { id = category.Id }, category);
@@ -100,17 +100,17 @@ namespace ITOFLIX.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCategory(short id)
         {
-            if (_context.Category == null)
+            if (_context.Categories == null)
             {
                 return NotFound();
             }
-            var category = await _context.Category.FindAsync(id);
+            var category = await _context.Categories.FindAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            _context.Category.Remove(category);
+            _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -118,7 +118,7 @@ namespace ITOFLIX.Controllers
 
         private bool CategoryExists(short id)
         {
-            return (_context.Category?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Categories?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

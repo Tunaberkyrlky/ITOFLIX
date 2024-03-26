@@ -9,7 +9,7 @@ namespace ITOFLIX.Data
 		public ITOFLIXContext(DbContextOptions<ITOFLIXContext> options): base(options)
 		{
 		}
-		public DbSet<ITOFLIX.Models.Category> Category { get; set; } = default!;
+		public DbSet<ITOFLIX.Models.Category> Categories { get; set; } = default!;
 	}
 }
 

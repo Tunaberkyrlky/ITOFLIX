@@ -9,7 +9,7 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddDbContext<ITOFLIXContext>(options =>
-        options.UseSqlServer(builder.Configuration["ConnectionString:ITOFLIXContext"]));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDatabase")));
         // Add services to the container.
 
         builder.Services.AddControllers();
