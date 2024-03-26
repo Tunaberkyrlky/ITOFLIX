@@ -1,4 +1,6 @@
-﻿
+﻿using ITOFLIX.Data;
+using Microsoft.EntityFrameworkCore;
+
 namespace ITOFLIX;
 
 public class Program
@@ -6,7 +8,8 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
+        builder.Services.AddDbContext<ITOFLIXContext>(options =>
+        options.UseSqlServer(builder.Configuration["ConnectionString:ITOFLIXContext"]));
         // Add services to the container.
 
         builder.Services.AddControllers();
