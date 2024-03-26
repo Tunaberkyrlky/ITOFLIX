@@ -22,7 +22,7 @@ namespace ITOFLIX.Models
 
         [StringLength(50)]
         [Column(TypeName = "nvarchar(50)")]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         //public Restrictions restrictions { get; set; }
     }

@@ -1,11 +1,31 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ITOFLIX.Models
 {
 	public class Episode
 	{
-		public Episode()
-		{
-		}
-	}
+        [StringLength(200, MinimumLength = 2)]
+        [Column(TypeName = "nvarchar(200)")]
+        public string Title { get; set; } = "";
+
+        [StringLength(500)]
+        [Column(TypeName = "nvarchar(500)")]
+        public string Description { get; set; } = "";
+
+        public TimeSpan Duration { get; set; }
+
+        public byte SeasonNumber { get; set; }
+
+		public short EpisodeNumber { get; set; }
+
+		public DateTime ReleaseDate { get; set; }
+
+
+        public int MediaId { get; set; }
+        [ForeignKey("MediaId")]
+        public Media? Media { get; set; }
+    }
 }
 

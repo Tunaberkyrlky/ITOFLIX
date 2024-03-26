@@ -1,11 +1,17 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace ITOFLIX.Models
 {
-	public class MediaRestrictions
+	public class MediaRestriction
 	{
-		public MediaRestrictions()
-		{
-		}
-	}
+        public int MediaId { get; set; }
+        [ForeignKey("MediaId")]
+        public Media? Media { get; set; }
+
+        public byte RestrictionId { get; set; }
+        [ForeignKey("RestrictionId")]
+        public Restriction? Restriction { get; set; }
+    }
 }
 
