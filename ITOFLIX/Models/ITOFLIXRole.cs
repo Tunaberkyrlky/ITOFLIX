@@ -1,9 +1,8 @@
 ﻿using System;
 using Microsoft.AspNetCore.Identity;
-
 namespace ITOFLIX.Models
 {
-	public class ITOFLIXUser : IdentityUser<long>
+	public class ITOFLIXRole : IdentityRole<long>
 	{
 		
 	}

@@ -5,12 +5,19 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ITOFLIX.Data
 {
-	public class ITOFLIXContext : IdentityDbContext
+	public class ITOFLIXContext : IdentityDbContext<ITOFLIXUser,ITOFLIXRole, long>
 	{
 		public ITOFLIXContext(DbContextOptions<ITOFLIXContext> options): base(options)
 		{
 		}
-		public DbSet<ITOFLIX.Models.Category> Categories { get; set; } = default!;
-	}
+	
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+        }
+
+        public DbSet<ITOFLIX.Models.Category> Categories { get; set; } = default!;
+    }
 }
 
