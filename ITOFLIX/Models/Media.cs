@@ -16,11 +16,11 @@ namespace ITOFLIX.Models
 		[Column(TypeName = "nvarchar(500)")]
 		public string? Description { get; set; }
 
-		public List<MediaCatagory>? MediaCatagories { get; set; }
+		public List<ITOFLIX.Models.CompositeModels.MediaCategory>? MediaCategories { get; set; }
 
-        public List<MediaActor>? MediaActors { get; set; }
+        public List<ITOFLIX.Models.CompositeModels.MediaActor>? MediaActors { get; set; }
 
-        public List<MediaDirector>? MediaDirectors { get; set; }
+        public List<ITOFLIX.Models.CompositeModels.MediaDirector>? MediaDirectors { get; set; }
 
 		public List<Restriction>? Restrictions { get; set; }
 	}

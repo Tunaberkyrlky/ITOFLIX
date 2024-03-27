@@ -6,6 +6,8 @@ namespace ITOFLIX.Models
 {
 	public class Episode
 	{
+        public long Id { get; set; }
+
         [StringLength(200, MinimumLength = 2)]
         [Column(TypeName = "nvarchar(200)")]
         public string Title { get; set; } = "";
@@ -24,6 +26,7 @@ namespace ITOFLIX.Models
 
 		public DateTime ReleaseDate { get; set; }
 
+        public long ViewCount { get; set; }
 
         public int MediaId { get; set; }
         [ForeignKey("MediaId")]
