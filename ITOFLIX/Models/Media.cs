@@ -22,7 +22,7 @@ namespace ITOFLIX.Models
 
         public List<MediaDirector>? MediaDirectors { get; set; }
 
-		public List<Restrictions>? Restrictions { get; set; }
+		public List<Restriction>? Restrictions { get; set; }
 	}
 }
 

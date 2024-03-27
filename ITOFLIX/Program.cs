@@ -1,5 +1,9 @@
 ﻿using ITOFLIX.Data;
+using ITOFLIX.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace ITOFLIX;
 
@@ -10,6 +14,8 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddDbContext<ITOFLIXContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDatabase")));
+
+        builder.Services.AddIdentity;
         // Add services to the container.
 
         builder.Services.AddControllers();

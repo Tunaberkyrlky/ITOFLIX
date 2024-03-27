@@ -16,8 +16,10 @@ namespace ITOFLIX.Models
 
         public TimeSpan Duration { get; set; }
 
+        [Range(0,byte.MaxValue)]
         public byte SeasonNumber { get; set; }
 
+        [Range(0,366)]
 		public short EpisodeNumber { get; set; }
 
 		public DateTime ReleaseDate { get; set; }
