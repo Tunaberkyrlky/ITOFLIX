@@ -14,6 +14,12 @@ namespace ITOFLIX.Models
 		[Column(TypeName= "date")]
 		public DateTime BirthDate { get; set; }
 
+		public bool Passive { get; set; }
+
+		[NotMapped]
+		[StringLength(100, MinimumLength =8)]
+		public string Password { get; set; } = "";
+
 	}
 }
 
