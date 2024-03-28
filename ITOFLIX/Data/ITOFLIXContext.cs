@@ -21,6 +21,8 @@ namespace ITOFLIX.Data
             builder.Entity<ITOFLIX.Models.CompositeModels.MediaActor>().HasKey(ma => new { ma.MediaId, ma.ActorId });
             builder.Entity<ITOFLIX.Models.CompositeModels.UserFavorite>().HasKey(uf => new { uf.MediaId, uf.UserId });
             builder.Entity<ITOFLIX.Models.CompositeModels.UserWatched>().HasKey(uw => new { uw.EpisodeId, uw.UserId });
+            builder.Entity<ITOFLIX.Models.Episode>().HasIndex(e => new { e.MediaId, e.EpisodeNumber, e.SeasonNumber }).IsUnique(true);
+            builder.Entity<ITOFLIX.Models.ITOFLIXUser>().HasIndex(user => user.Email).IsUnique(true);
         }
         public DbSet<ITOFLIX.Models.Actor> Actors { get; set; } = default!;
         public DbSet<ITOFLIX.Models.Category> Categories { get; set; } = default!;

@@ -154,7 +154,7 @@ namespace ITOFLIX.Controllers
         [HttpPost("Login")]
         public bool Login(LoginVM loginVM)
         {
-            //
+            // Check user subscription end date and add subscription plan claim
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
 
             ITOFLIXUser? iTOFLIXUser = _signInManager.UserManager.FindByNameAsync(loginVM.Username).Result;
