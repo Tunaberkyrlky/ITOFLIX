@@ -6,6 +6,8 @@ namespace ITOFLIX.Models
 {
 	public class Episode
 	{
+        public long Id { get; set; }
+
         [StringLength(200, MinimumLength = 2)]
         [Column(TypeName = "nvarchar(200)")]
         public string Title { get; set; } = "";
