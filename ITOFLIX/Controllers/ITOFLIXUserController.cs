@@ -30,10 +30,12 @@ namespace ITOFLIX.Controllers
             public string NewPassword { get; set; }
         }
         private readonly SignInManager<ITOFLIXUser> _signInManager;
+        private readonly ITOFLIXContext _context;
 
-        public ITOFLIXUserController(SignInManager<ITOFLIXUser> signInManager)
+        public ITOFLIXUserController(SignInManager<ITOFLIXUser> signInManager, ITOFLIXContext context)
         {
             _signInManager = signInManager;
+            _context = context;
         }
 
         // GET: api/ITOFLIXUser
@@ -152,22 +154,33 @@ namespace ITOFLIX.Controllers
         }
 
         [HttpPost("Login")]
-        public bool Login(LoginVM loginVM)
+        public ActionResult<bool> Login(LoginVM loginVM)
         {
             // Check user subscription end date and add subscription plan claim
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
 
-            ITOFLIXUser? iTOFLIXUser = _signInManager.UserManager.FindByNameAsync(loginVM.Username).Result;
+            ITOFLIXUser? user = _signInManager.UserManager.FindByNameAsync(loginVM.Username).Result;
 
-            if(iTOFLIXUser == null)
+            if(user == null)
             {
                 return false;
             }
-            else if (iTOFLIXUser.Passive == true)
+            else if (user.Passive == true)
             {
                 return false;
             }
-            signInResult = _signInManager.PasswordSignInAsync(iTOFLIXUser, loginVM.Password, false, false).Result;
+            else if (_context.UserSubscriptions.Where(us=>us.UserId == user!.Id && us.EndDate == DateTime.Today).Any())
+            {
+                user.Passive = true;
+                _signInManager.UserManager.UpdateAsync(user).Wait();
+            }
+            else if (user.Passive == true)
+            {
+                return Content("Passive");
+            }
+
+            signInResult = _signInManager.PasswordSignInAsync(user, loginVM.Password, false, false).Result;
+
             if(signInResult != Microsoft.AspNetCore.Identity.SignInResult.Success)
             {
                 return false;
