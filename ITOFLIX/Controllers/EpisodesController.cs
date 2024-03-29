@@ -56,23 +56,54 @@ namespace ITOFLIX.Controllers
 
         [HttpGet("Watch")]
         [Authorize]
-        public void Watch(long id)
+        public ActionResult Watch(long episodeId)
         {
             UserWatched userWatched = new UserWatched();
-            Episode episode = new Episode();
-
+            Episode? episode = _context.Episodes.Find(episodeId);
+            if (episode == null)
+            {
+                return NoContent();
+            }
             try
             {
                 userWatched.UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                userWatched.EpisodeId = id;
+                userWatched.EpisodeId = episodeId;
                 _context.UserWatcheds.Add(userWatched);
-                episode.ViewCount++;
+                episode!.ViewCount++;
                 _context.Episodes.Update(episode);
-                _context.SaveChanges(); 
+                _context.SaveChanges();
+                return Ok();
             }
             catch (Exception ex)
             {
+                return NoContent();
+            }
 
+        }
+
+        [HttpGet("Favorite")]
+        [Authorize]
+        public ActionResult AddFavorite(long mediaId)
+        {
+            UserFavorite userFavorite = new UserFavorite();
+            Media? media = _context.Media.Find(mediaId);
+
+
+            if (media == null)
+            {
+                return NoContent();
+            }
+            try
+            {
+                userFavorite.MediaId = media.Id;
+                userFavorite.UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
+                _context.Media.Update(media);
+                _context.SaveChanges();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return NoContent();
             }
         }
 
@@ -137,5 +168,6 @@ namespace ITOFLIX.Controllers
         {
             return (_context.Episodes?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
     }
 }

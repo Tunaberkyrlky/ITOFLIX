@@ -16,6 +16,8 @@ namespace ITOFLIX.Models
 		[Column(TypeName = "nvarchar(500)")]
 		public string? Description { get; set; }
 
+		public bool Passive { get; set; }
+
 		public List<ITOFLIX.Models.CompositeModels.MediaCategory>? MediaCategories { get; set; }
 
         public List<ITOFLIX.Models.CompositeModels.MediaActor>? MediaActors { get; set; }
