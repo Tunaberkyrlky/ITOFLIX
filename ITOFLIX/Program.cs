@@ -16,7 +16,10 @@ public class Program
         options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDatabase")));
 
         builder.Services.AddDefaultIdentity<ITOFLIXUser>(options =>
-        options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<ITOFLIXContext>();
+        options.SignIn.RequireConfirmedAccount = true).AddRoles<ITOFLIXRole>().AddEntityFrameworkStores<ITOFLIXContext>();
+
+
+
         // Add services to the container.
 
         builder.Services.AddControllers();

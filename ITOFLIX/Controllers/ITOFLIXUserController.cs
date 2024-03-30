@@ -125,7 +125,7 @@ namespace ITOFLIX.Controllers
             
             ITOFLIXUser newITOFLIXUser =  userConverter.Convert(userCreateRequest);
 
-            IdentityResult identityResult = _signInManager.UserManager.CreateAsync(newITOFLIXUser, newITOFLIXUser.Password).Result;
+            IdentityResult identityResult = _signInManager.UserManager.CreateAsync(newITOFLIXUser, userCreateRequest.Password).Result;
 
             if(identityResult != IdentityResult.Success)
             {
