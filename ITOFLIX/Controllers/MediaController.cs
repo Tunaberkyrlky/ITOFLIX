@@ -62,26 +62,35 @@ namespace ITOFLIX.Controllers
             }
             Media? currentMedia = _context.Media.Find(id);
 
-            currentMedia.Name = media.Name;
-            currentMedia.Description = media.Description;
-            currentMedia.Passive = media.Passive;
-            //mediaactor, mediacatagory, mediadirector, restrictions are missing
-            try
+
+            if (media != null)
             {
-                _context.SaveChanges();
-                return Ok();
+                currentMedia.Name = media.Name;
+                currentMedia.Description = media.Description;
+                currentMedia.Passive = media.Passive;
+                //mediaactor, mediacatagory, mediadirector, restrictions are missing
+                try
+                {
+                    _context.SaveChanges();
+                    return Ok();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!MediaExists(id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            else
             {
-                if (!MediaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
             }
+            
         }
 
         // POST: api/Media
