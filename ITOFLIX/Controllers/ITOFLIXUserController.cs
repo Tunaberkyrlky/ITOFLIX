@@ -10,6 +10,10 @@ using ITOFLIX.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using ITOFLIX.DTO;
+using ITOFLIX.DTO.Responses;
+using ITOFLIX.DTO.Converters;
+using ITOFLIX.DTO.Requests;
 
 
 namespace ITOFLIX.Controllers
@@ -18,11 +22,7 @@ namespace ITOFLIX.Controllers
     [ApiController]
     public class ITOFLIXUserController : ControllerBase
     {
-        public struct LoginVM
-        {
-            public string Username { get; set; }
-            public string Password { get; set; }
-        }
+
         public struct ValidateTokenVM
         {
             public long Id { get; set; }
@@ -31,6 +31,8 @@ namespace ITOFLIX.Controllers
         }
         private readonly SignInManager<ITOFLIXUser> _signInManager;
         private readonly ITOFLIXContext _context;
+
+        UserConverter userConverter = new UserConverter();
 
         public ITOFLIXUserController(SignInManager<ITOFLIXUser> signInManager, ITOFLIXContext context)
         {
@@ -41,22 +43,24 @@ namespace ITOFLIX.Controllers
         // GET: api/ITOFLIXUser
         [HttpGet]
         [Authorize(Roles = "Administrator")]
-        public ActionResult<List<ITOFLIXUser>> GetUsers(bool includePassive = true)
+        public ActionResult<List<UserGetResponse>> GetUsers(bool includePassive = true)
         {
             IQueryable<ITOFLIXUser> users = _signInManager.UserManager.Users;
             if (includePassive == false)
             {
                 users = users.Where(u => u.Passive == false);
             }
-            return users.AsNoTracking().ToList();
+            
+            return userConverter.Convert(users.AsNoTracking().ToList());
         }
 
         // GET: api/ITOFLIXUser/5
         [HttpGet("{id}")] 
         [Authorize]
-        public ActionResult<ITOFLIXUser> GetITOFLIXUser(long id)
+        public ActionResult<UserGetResponse> GetITOFLIXUser(long id)
         {
             ITOFLIXUser? iTOFLIXUser;
+
             if (User.IsInRole("Administrator") == false)
             {
                 if (User.FindFirstValue(ClaimTypes.NameIdentifier) != id.ToString())
@@ -70,16 +74,21 @@ namespace ITOFLIX.Controllers
             {
               return NotFound();
             }
-            return iTOFLIXUser;
+            else
+            {
+                UserGetResponse userGetResponse = userConverter.Convert(iTOFLIXUser);
+                return userGetResponse;
+            }
         }
 
         // PUT: api/ITOFLIXUser/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut]
         [Authorize]
-        public ActionResult PutITOFLIXUser(long id, ITOFLIXUser iTOFLIXUser)
+        public ActionResult PutITOFLIXUser(long id, UserUpdateRequest userUpdateRequest)
         {
-            ITOFLIXUser? user = null;
+            ITOFLIXUser? user;
+
             if (User.IsInRole("CustomerRepresentive") == false)
             {
                 if (User.FindFirstValue(ClaimTypes.NameIdentifier) != id.ToString())
@@ -88,17 +97,16 @@ namespace ITOFLIX.Controllers
                 }
             }
 
-            user = _signInManager.UserManager.Users.Where(u => u.Id == iTOFLIXUser.Id).FirstOrDefault();
+            user = _signInManager.UserManager.Users.Where(u => u.Id == id).FirstOrDefault();
 
             if (user == null)
             {
                 return NotFound();
             }
 
-            user.Name = iTOFLIXUser.Name;
-            user.UserName = iTOFLIXUser.UserName;
-            user.PhoneNumber = iTOFLIXUser.PhoneNumber;
-            user.Email = iTOFLIXUser.Email;
+            user.UserName = userUpdateRequest.UserName;
+            user.PhoneNumber = userUpdateRequest.PhoneNumber;
+            user.Email = userUpdateRequest.Email;
 
             _signInManager.UserManager.UpdateAsync(user).Wait();
 
@@ -108,25 +116,27 @@ namespace ITOFLIX.Controllers
         // POST: api/ITOFLIXUser
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult<string> PostITOFLIXUser(ITOFLIXUser iTOFLIXUser)
+        public ActionResult<string> PostITOFLIXUser(UserCreateRequest userCreateRequest)
         {
             if (User.Identity!.IsAuthenticated == true)
             {
                 return BadRequest();
             }
-            iTOFLIXUser.UserName = iTOFLIXUser.Email;
+            
+            ITOFLIXUser newITOFLIXUser =  userConverter.Convert(userCreateRequest);
 
-            IdentityResult identityResult = _signInManager.UserManager.CreateAsync(iTOFLIXUser, iTOFLIXUser.Password).Result;
+            IdentityResult identityResult = _signInManager.UserManager.CreateAsync(newITOFLIXUser, newITOFLIXUser.Password).Result;
 
             if(identityResult != IdentityResult.Success)
             {
                 return identityResult.Errors.FirstOrDefault()!.Description;
             }
-            return Ok(iTOFLIXUser.Id);
+            return Ok(newITOFLIXUser.Id);
         }
 
         // DELETE: api/ITOFLIXUser/5
         [HttpDelete("{id}")]
+        [Authorize]
         public IActionResult DeleteITOFLIXUser(long id)
         {
             ITOFLIXUser? user = null;
@@ -154,12 +164,12 @@ namespace ITOFLIX.Controllers
         }
 
         [HttpPost("Login")]
-        public ActionResult<bool> Login(LoginVM loginVM)
+        public ActionResult<bool> Login(LoginRequest loginRequest)
         {
             // Check user subscription end date and add subscription plan claim
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
 
-            ITOFLIXUser? user = _signInManager.UserManager.FindByNameAsync(loginVM.Username).Result;
+            ITOFLIXUser? user = _signInManager.UserManager.FindByNameAsync(loginRequest.UserName).Result;
 
             if(user == null)
             {
@@ -179,7 +189,7 @@ namespace ITOFLIX.Controllers
                 return Content("Passive");
             }
 
-            signInResult = _signInManager.PasswordSignInAsync(user, loginVM.Password, false, false).Result;
+            signInResult = _signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false).Result;
 
             if(signInResult != Microsoft.AspNetCore.Identity.SignInResult.Success)
             {
@@ -213,7 +223,11 @@ namespace ITOFLIX.Controllers
             {
                 return BadRequest();   
             }
-            IdentityResult? identityResult = _signInManager.UserManager.ResetPasswordAsync(user!, validateTokenVM.ResetPasswordToken, validateTokenVM.NewPassword).Result;
+            IdentityResult? identityResult = _signInManager.UserManager.ResetPasswordAsync
+                (user!, 
+                validateTokenVM.ResetPasswordToken, 
+                validateTokenVM.NewPassword
+                ).Result;
             return Ok(identityResult.Succeeded);
             
         }
