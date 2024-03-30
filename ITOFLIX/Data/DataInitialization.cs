@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNet.Identity;
 using ITOFLIX.Models;
 
 
@@ -11,7 +10,7 @@ namespace ITOFLIX.Data
         private readonly ITOFLIXContext _context;
         private readonly SignInManager<ITOFLIXUser> _signInManager;
         private readonly RoleManager<ITOFLIXRole> _roleManager;
-        public DataInitialization(ITOFLIXContext context, SignInManager<ITOFLIXUser> signInManager, Microsoft.AspNet.Identity.RoleManager<ITOFLIXRole> roleManager)
+        public DataInitialization(ITOFLIXContext context, SignInManager<ITOFLIXUser> signInManager, RoleManager<ITOFLIXRole> roleManager)
         {
             _context = context;
             _signInManager = signInManager;
@@ -34,9 +33,15 @@ namespace ITOFLIX.Data
             }
         }
 
-        public void CreateRoles()
-        {
+        //public void CreateRoles()
+        //{
+        //    if(_roleManager.Roles.Count() == 0)
+        //    {
+        //        IdentityRole identityRole;
 
-        }
+        //        identityRole = new IdentityRole("Administrator");
+        //        _roleManager.CreateAsync(identityRole).Wait();
+        //    }
+        //}
     }
 }
