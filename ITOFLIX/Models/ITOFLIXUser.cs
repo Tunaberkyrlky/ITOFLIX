@@ -20,6 +20,25 @@ namespace ITOFLIX.Models
 		//[StringLength(100, MinimumLength =8)]
 		//public string Password { get; set; } = "";
 
+		public byte Restrictions
+		{
+			get
+			{
+				if (BirthDate.AddYears(7) < DateTime.Now)
+				{
+					return 7;
+				}
+				else if ((BirthDate.AddYears(13) < DateTime.Now))
+				{
+					return 13;
+				}
+                else if ((BirthDate.AddYears(18) < DateTime.Now))
+                {
+                    return 18;
+                }
+				return 0;
+            }
+		}
 	}
 }
 

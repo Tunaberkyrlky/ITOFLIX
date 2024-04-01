@@ -1,7 +1,7 @@
 ﻿
 using Microsoft.AspNetCore.Identity;
 using ITOFLIX.Models;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace ITOFLIX.Data
 {
@@ -15,6 +15,22 @@ namespace ITOFLIX.Data
             _context = context;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            if (_context != null)
+            {
+                _context.Database.Migrate();
+                if(_context.Users.Count()==0)
+                {
+                    CreateAdminUser();
+                }
+                if(_context.Roles.Count()==0)
+                {
+                    CreateRoles();
+                }
+                if(_context.Plans.Count()==0)
+                {
+                    CreatePlans();
+                }
+            }
         }
 
         public void CreateAdminUser()
@@ -33,15 +49,30 @@ namespace ITOFLIX.Data
             }
         }
 
-        //public void CreateRoles()
-        //{
-        //    if(_roleManager.Roles.Count() == 0)
-        //    {
-        //        IdentityRole identityRole;
 
-        //        identityRole = new IdentityRole("Administrator");
-        //        _roleManager.CreateAsync(identityRole).Wait();
-        //    }
-        //}
+        public void CreateRoles()
+        {
+            ITOFLIXRole iTOFLIXRole;
+            iTOFLIXRole = new ITOFLIXRole() { Name = "Administrator"};
+            _roleManager.CreateAsync(iTOFLIXRole).Wait();
+        }
+
+        public void CreateRestrictions()
+        {
+            _context.Restrictions.Add(new Restriction() { Id = 0, Name = "Genel İzleyici" });
+            _context.Restrictions.Add(new Restriction() { Id = 7, Name = "7 yaş ve üzeri" });
+            _context.Restrictions.Add(new Restriction() { Id = 13, Name = "13 yaş ve üzeri" });
+            _context.Restrictions.Add(new Restriction() { Id = 18, Name = "18 yaş ve üzeri" });
+
+            _context.SaveChanges();
+        }
+
+        public void CreatePlans()
+        {
+            _context.Plans.Add(new Plan() { Name = "Standart", Price = 100, Resolution = "1080" });
+
+            _context.SaveChanges();
+        }
+
     }
 }
