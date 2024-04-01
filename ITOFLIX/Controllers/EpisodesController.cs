@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ITOFLIX.Data;
@@ -10,6 +6,9 @@ using ITOFLIX.Models;
 using Microsoft.AspNetCore.Authorization;
 using ITOFLIX.Models.CompositeModels;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
+
+
 
 namespace ITOFLIX.Controllers
 {
@@ -18,10 +17,12 @@ namespace ITOFLIX.Controllers
     public class EpisodesController : ControllerBase
     {
         private readonly ITOFLIXContext _context;
+        private readonly UserManager<ITOFLIXUser> _userManager;
 
-        public EpisodesController(ITOFLIXContext context)
+        public EpisodesController(ITOFLIXContext context, UserManager<ITOFLIXUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: api/Episodes
@@ -64,6 +65,7 @@ namespace ITOFLIX.Controllers
             {
                 return NoContent();
             }
+            
             try
             {
                 userWatched.UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));

@@ -42,15 +42,11 @@ public class Program
 
         app.MapControllers();
         {
-            //ApplicationContext? Context = app.Services.CreateScope().ServiceProvider.GetService<ApplicationContext>();
-            //RoleManager<IdentityRole>? roleManager = app.Services.CreateScope().ServiceProvider.GetService<RoleManager<IdentityRole>>();
-            //UserManager<ApplicationUser>? userManager = app.Services.CreateScope().ServiceProvider.GetService<UserManager<ApplicationUser>>();
-            //SignInManager<ApplicationUser>? signInManager = app.Services.CreateScope().ServiceProvider.GetService<SignInManager<ApplicationUser>>();
             ITOFLIXContext? context = app.Services.CreateScope().ServiceProvider.GetService<ITOFLIXContext>();
             SignInManager<ITOFLIXUser>? signInManager = app.Services.CreateScope().ServiceProvider.GetService < SignInManager<ITOFLIXUser>>();
             RoleManager<ITOFLIXRole>? roleManager = app.Services.CreateScope().ServiceProvider.GetService<RoleManager<ITOFLIXRole>>();
 
-            DataInitialization dataInitialization = new DataInitialization(context, signInManager, roleManager);
+            DataInitialization dataInitialization = new DataInitialization(context!, signInManager!, roleManager!);
         }
 
 

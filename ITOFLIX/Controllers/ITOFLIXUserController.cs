@@ -46,6 +46,7 @@ namespace ITOFLIX.Controllers
         public ActionResult<List<UserGetResponse>> GetUsers(bool includePassive = true)
         {
             IQueryable<ITOFLIXUser> users = _signInManager.UserManager.Users;
+
             if (includePassive == false)
             {
                 users = users.Where(u => u.Passive == false);
@@ -166,7 +167,6 @@ namespace ITOFLIX.Controllers
         [HttpPost("Login")]
         public ActionResult<bool> Login(LoginRequest loginRequest)
         {
-            // Check user subscription end date and add subscription plan claim
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
 
             ITOFLIXUser? user = _signInManager.UserManager.FindByNameAsync(loginRequest.UserName).Result;
@@ -190,11 +190,10 @@ namespace ITOFLIX.Controllers
             }
 
             signInResult = _signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false).Result;
-
-            if(signInResult != Microsoft.AspNetCore.Identity.SignInResult.Success)
-            {
-                return false;
-            }
+            //if(signInResult != Microsoft.AspNetCore.Identity.SignInResult.Success)
+            //{
+            //    return false;
+            //}
             return signInResult.Succeeded;
         }
 

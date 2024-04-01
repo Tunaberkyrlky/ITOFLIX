@@ -30,6 +30,7 @@ namespace ITOFLIX.Data
                 {
                     CreatePlans();
                 }
+                _context.SaveChanges();
             }
         }
 
@@ -42,10 +43,18 @@ namespace ITOFLIX.Data
                     Name = "admin",
                     Email = "admin",
                     PhoneNumber = "1234567890",
-                    BirthDate = DateTime.Now
+                    BirthDate = DateTime.Now.Date,
                 };
+                ITOFLIXUser user = new ITOFLIXUser();
+                user.Name = "admin2";
+                user.Email = "admin";
+                user.PhoneNumber = "1234567890";
+                user.BirthDate = DateTime.Now.Date;
+
+
                 string adminUserPassword = "Admin123!"; 
-                _signInManager.UserManager.CreateAsync(adminUser, adminUserPassword);
+                _signInManager.UserManager.CreateAsync(adminUser, adminUserPassword).Wait();
+                _signInManager.UserManager.CreateAsync(user, adminUserPassword).Wait();
             }
         }
 
