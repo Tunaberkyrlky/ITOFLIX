@@ -14,7 +14,7 @@ using ITOFLIX.DTO;
 using ITOFLIX.DTO.Responses;
 using ITOFLIX.DTO.Converters;
 using ITOFLIX.DTO.Requests;
-
+using ITOFLIX.Models.CompositeModels;
 
 namespace ITOFLIX.Controllers
 {
@@ -119,10 +119,10 @@ namespace ITOFLIX.Controllers
         [HttpPost]
         public ActionResult<string> PostITOFLIXUser(UserCreateRequest userCreateRequest)
         {
-            if (User.Identity!.IsAuthenticated == true)
-            {
-                return BadRequest();
-            }
+            //if (User.Identity!.IsAuthenticated == true)
+            //{
+            //    return BadRequest();
+            //}
             
             ITOFLIXUser newITOFLIXUser =  userConverter.Convert(userCreateRequest);
 
@@ -165,21 +165,22 @@ namespace ITOFLIX.Controllers
         }
 
         [HttpPost("Login")]
-        public ActionResult<bool> Login(LoginRequest loginRequest)
+        public ActionResult<List<Media>> Login(LoginRequest loginRequest)
         {
             Microsoft.AspNetCore.Identity.SignInResult signInResult;
+            List<Media>? medias = null;
+            List<UserFavorite> userFavorites;
+            IGrouping<short, MediaCategory>? mediaCategories;
+            IQueryable<Media> mediaQuery;
+            IQueryable<int> userWatcheds;
 
             ITOFLIXUser? user = _signInManager.UserManager.FindByNameAsync(loginRequest.UserName).Result;
 
             if(user == null)
             {
-                return false;
+                return NotFound();
             }
-            else if (user.Passive == true)
-            {
-                return false;
-            }
-            else if (_context.UserSubscriptions.Where(us=>us.UserId == user!.Id && us.EndDate == DateTime.Today).Any())
+            else if (_context.UserSubscriptions.Where(us=>us.UserId == user!.Id && us.EndDate <= DateTime.Today).Any())
             {
                 user.Passive = true;
                 _signInManager.UserManager.UpdateAsync(user).Wait();
@@ -190,12 +191,48 @@ namespace ITOFLIX.Controllers
             }
 
             signInResult = _signInManager.PasswordSignInAsync(user, loginRequest.Password, false, false).Result;
-            //if(signInResult != Microsoft.AspNetCore.Identity.SignInResult.Success)
-            //{
-            //    return false;
-            //}
-            return signInResult.Succeeded;
+            if (signInResult.Succeeded == true)
+            {
+                //Kullanıcının favori olarak işaretlediği mediaları ve kategorilerini alıyoruz.
+                userFavorites = _context.UserFavorites
+                    .Where(u => u.UserId == user.Id)
+                    .Include(u => u.Media)
+                    .Include(u => u.Media!.MediaCategories).ToList();
+
+                //userFavorites içindeki media kategorilerini ayıklıyoruz (SelectMany)
+                //Bunları kategori id'lerine göre grupluyoruz (GroupBy)
+                //Her grupta kaç adet item olduğuna bakıp (m.Count())
+                //Çoktan aza doğru sıralıyoruz (OrderByDescending)
+                //En üstteki, yani en çok item'a sahip grubu seçiyoruz (FirstOrDefault)
+                mediaCategories = userFavorites.SelectMany(u => u.Media!.MediaCategories!)
+                                               .GroupBy(mc => mc.CategoryId)
+                                               .OrderByDescending(mc => mc.Count())
+                                               .FirstOrDefault();
+
+                if(mediaCategories != null)
+                {
+                    //Kullanıcının izlediği episode'lardan media'ya ulaşıp, sadece media id'lerini alıyoruz (Select)
+                    //Tekrar eden media id'leri eliyoruz (Distinct)
+                    userWatcheds = _context.UserWatcheds.Where(u => u.UserId == user.Id).Include(u => u.Episode).Select(u => u.Episode!.MediaId).Distinct();
+                    //Öneri yapmak için mediaCategories.Key'i yani kullanıcının en çok favorilediği kategori id'sini kullanıyoruz
+                    //Media listesini çekerken sadece bu kategoriye ait mediaların MediaCategories listesini dolduruyoruz
+                    //(Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)))
+                    //Diğer mediaların MediaCategories listeleri boş kalıyor
+                    //Sonrasında MediaCategories'i boş olmayan media'ları filtreliyoruz (m.MediaCategories!.Count > 0)
+                    //Ayrıca bu kategoriye giren fakat kullanıcının izlemiş olduklarını da dışarıda bırakıyoruz (userWatcheds.Contains(m.Id) == false)
+                    mediaQuery = _context.Media.Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)).Where(m => m.MediaCategories!.Count > 0 && userWatcheds.Contains(m.Id) == false);
+                    if (user.Restrictions != null)
+                    {
+                        //to do
+                        //Son olarak, kullanıcı bir restrictiona sahipse seçilen media içerisinden bunları da çıkarmamız gerekiyor.
+                        mediaQuery = mediaQuery.Include(m => m.Restrictions!.Where(r => r.Id <= user.Restrictions));
+                    }
+                    medias = mediaQuery.ToList();
+                }
+            }
+            return medias;
         }
+
 
         [HttpPost("Logout")]
         public void Logout()
