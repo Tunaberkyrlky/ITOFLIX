@@ -15,8 +15,7 @@ public class Program
         builder.Services.AddDbContext<ITOFLIXContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("ApplicationDatabase")));
 
-        builder.Services.AddDefaultIdentity<ITOFLIXUser>(options =>
-        options.SignIn.RequireConfirmedAccount = true).AddRoles<ITOFLIXRole>().AddEntityFrameworkStores<ITOFLIXContext>();
+        builder.Services.AddIdentity<ITOFLIXUser,ITOFLIXRole>().AddEntityFrameworkStores<ITOFLIXContext>().AddDefaultTokenProviders();
 
 
 

@@ -20,7 +20,7 @@ namespace ITOFLIX.Models
 		//[StringLength(100, MinimumLength =8)]
 		//public string Password { get; set; } = "";
 
-		public byte Restrictions
+		public byte? Restrictions
 		{
 			get
 			{
@@ -36,7 +36,7 @@ namespace ITOFLIX.Models
                 {
                     return 18;
                 }
-				return 0;
+				return null;
             }
 		}
 	}

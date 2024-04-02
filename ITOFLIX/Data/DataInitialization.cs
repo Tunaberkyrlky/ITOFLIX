@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Identity;
 using ITOFLIX.Models;
 using Microsoft.EntityFrameworkCore;
+using ITOFLIX.DTO.Requests;
+using ITOFLIX.DTO.Converters;
 
 namespace ITOFLIX.Data
 {
@@ -18,43 +20,50 @@ namespace ITOFLIX.Data
             if (_context != null)
             {
                 _context.Database.Migrate();
-                if(_context.Users.Count()==0)
+                if(_context.Restrictions.Count() == 0)
                 {
-                    CreateAdminUser();
+                    CreateRestrictions();
                 }
-                if(_context.Roles.Count()==0)
-                {
-                    CreateRoles();
-                }
-                if(_context.Plans.Count()==0)
+                if (_context.Plans.Count() == 0)
                 {
                     CreatePlans();
                 }
                 _context.SaveChanges();
+                if (_context.Roles.Count() == 0)
+                {
+                    CreateRoles();
+                }
+                if (_context.Users.Count()==0)
+                {
+                    CreateAdminUser();
+                }
+                if(_context.Categories.Count() == 0)
+                {
+                    CreateCategories();
+                }
             }
         }
 
         public void CreateAdminUser()
         {
+            IdentityResult identityResult;
             if(_signInManager.UserManager.Users.Count() == 0)
             {
-                ITOFLIXUser adminUser = new ITOFLIXUser()
+                UserCreateRequest newUserRequest = new UserCreateRequest()
                 {
                     Name = "admin",
-                    Email = "admin",
+                    Email = "admin@abc.com",
                     PhoneNumber = "1234567890",
                     BirthDate = DateTime.Now.Date,
+                    Password = "Admin123!"
                 };
-                ITOFLIXUser user = new ITOFLIXUser();
-                user.Name = "admin2";
-                user.Email = "admin";
-                user.PhoneNumber = "1234567890";
-                user.BirthDate = DateTime.Now.Date;
 
+                UserConverter userConverter = new UserConverter();
+                ITOFLIXUser NewUser = userConverter.Convert(newUserRequest);
 
                 string adminUserPassword = "Admin123!"; 
-                _signInManager.UserManager.CreateAsync(adminUser, adminUserPassword).Wait();
-                _signInManager.UserManager.CreateAsync(user, adminUserPassword).Wait();
+                identityResult =  _signInManager.UserManager.CreateAsync(NewUser, adminUserPassword).Result;
+                _signInManager.UserManager.AddToRoleAsync(NewUser, "Administrator");
             }
         }
 
@@ -62,7 +71,8 @@ namespace ITOFLIX.Data
         public void CreateRoles()
         {
             ITOFLIXRole iTOFLIXRole;
-            iTOFLIXRole = new ITOFLIXRole() { Name = "Administrator"};
+
+            iTOFLIXRole = new ITOFLIXRole("Administrator");
             _roleManager.CreateAsync(iTOFLIXRole).Wait();
         }
 
@@ -79,6 +89,30 @@ namespace ITOFLIX.Data
         public void CreatePlans()
         {
             _context.Plans.Add(new Plan() { Name = "Standart", Price = 100, Resolution = "1080" });
+
+            _context.SaveChanges();
+        }
+
+        public void CreateCategories()
+        {
+            Category category = new Category{Name = "Korku" };
+            _context.Categories.Add(category);
+            Category category1 = new Category { Name = "Animasyon" };
+            _context.Categories.Add(category1);
+            Category category2 = new Category { Name = "Komedi" };
+            _context.Categories.Add(category2);
+            Category category3 = new Category { Name = "Romantik" };
+            _context.Categories.Add(category3);
+            Category category4 = new Category { Name = "Bilim kurgu" };
+            _context.Categories.Add(category4);
+            Category category5 = new Category { Name = "Psikolojik" };
+            _context.Categories.Add(category5);
+            Category category6 = new Category { Name = "Belgesel" };
+            _context.Categories.Add(category6);
+            Category category7 = new Category { Name = "Macera" };
+            _context.Categories.Add(category7);
+            Category category8 = new Category { Name = "Dram" };
+            _context.Categories.Add(category8);
 
             _context.SaveChanges();
         }
