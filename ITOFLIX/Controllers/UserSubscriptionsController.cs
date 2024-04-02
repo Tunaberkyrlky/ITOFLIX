@@ -62,6 +62,7 @@ namespace ITOFLIX.Controllers
             {
                 return BadRequest();
             }
+            //claim sorgula bu user abone olan user mı
             UserSubscription? currentUserSubscription = _context.UserSubscriptions.Find(id);
 
             currentUserSubscription.StartDate = userSubscription.StartDate;
