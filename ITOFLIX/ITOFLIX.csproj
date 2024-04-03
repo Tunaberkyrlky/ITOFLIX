@@ -28,11 +28,19 @@
     <None Remove="Data\" />
     <None Remove="Models\BaseModels\" />
     <None Remove="Models\CompositeModels\" />
+    <None Remove="DTO\Requests\UserRequests\" />
+    <None Remove="DTO\Requests\MediaRequests\" />
+    <None Remove="DTO\Responses\UserResponses\" />
+    <None Remove="DTO\Responses\MediaResponses\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
     <Folder Include="Models\" />
     <Folder Include="Models\BaseModels\" />
     <Folder Include="Models\CompositeModels\" />
+    <Folder Include="DTO\Requests\UserRequests\" />
+    <Folder Include="DTO\Requests\MediaRequests\" />
+    <Folder Include="DTO\Responses\UserResponses\" />
+    <Folder Include="DTO\Responses\MediaResponses\" />
   </ItemGroup>
 </Project>

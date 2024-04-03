@@ -24,7 +24,7 @@ namespace ITOFLIX.Models
 
         public List<ITOFLIX.Models.CompositeModels.MediaDirector>? MediaDirectors { get; set; }
 
-		public List<Restriction>? Restrictions { get; set; }
+		public List<ITOFLIX.Models.CompositeModels.MediaRestriction>? MediaRestrictions { get; set; }
 
 		//[Range(0,10)]
 		//public float IMDBRating { get; set; }

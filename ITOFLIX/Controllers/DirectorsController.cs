@@ -111,7 +111,7 @@ namespace ITOFLIX.Controllers
                 return NotFound();
             }
 
-            director.Passive = true;
+            //director.Passive = true;
             _context.Directors.Update(director);
             _context.SaveChanges();
             return Ok();

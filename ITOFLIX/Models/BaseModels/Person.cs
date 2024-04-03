@@ -13,7 +13,7 @@ namespace ITOFLIX.Models.BaseModels
         [Column(TypeName = "nvarchar(200)")]
         public string Name { get; set; } = "";
 
-        public bool Passive { get; set; }
+        //public bool Passive { get; set; } = true;
     }
 }
 

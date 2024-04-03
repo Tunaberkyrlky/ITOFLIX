@@ -225,7 +225,7 @@ namespace ITOFLIX.Controllers
                     {
                         //to do
                         //Son olarak, kullanıcı bir restrictiona sahipse seçilen media içerisinden bunları da çıkarmamız gerekiyor.
-                        mediaQuery = mediaQuery.Include(m => m.Restrictions!.Where(r => r.Id <= user.Restrictions));
+                        mediaQuery = mediaQuery.Include(m => m.MediaRestrictions!.Where(r => r.RestrictionId <= user.Restrictions));
                     }
                     medias = mediaQuery.ToList();
                 }

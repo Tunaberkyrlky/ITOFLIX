@@ -10,6 +10,8 @@ using ITOFLIX.Models;
 using Microsoft.AspNetCore.Authorization;
 using ITOFLIX.Models.CompositeModels;
 using System.Security.Claims;
+using ITOFLIX.DTO.Requests.MediaRequests;
+using ITOFLIX.DTO.Converters;
 
 namespace ITOFLIX.Controllers
 {
@@ -18,6 +20,8 @@ namespace ITOFLIX.Controllers
     public class MediaController : ControllerBase
     {
         private readonly ITOFLIXContext _context;
+
+        MediaConverter mediaConverter = new MediaConverter();
 
         public MediaController(ITOFLIXContext context)
         {
@@ -96,16 +100,18 @@ namespace ITOFLIX.Controllers
         // POST: api/Media
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public ActionResult PostMedia(Media media)
+        public ActionResult PostMedia(MediaCreateRequest mediaCreateRequest)
         {
-          if (_context.Media == null)
-          {
-              return Problem("Entity set 'ITOFLIXContext.Media'  is null.");
-          }
-            _context.Media.Add(media);
+            Media emptyMedia = new();
+            _context.Media.Add(emptyMedia);
             _context.SaveChanges();
 
-            return Ok("Media posted succesfully");
+            Media newMedia = mediaConverter.Convert(mediaCreateRequest,emptyMedia.Id, _context);
+
+            emptyMedia = newMedia;
+            _context.Media.Update(emptyMedia);
+            _context.SaveChanges();
+            return Ok();
         }
 
         [HttpGet("Favorite")]
