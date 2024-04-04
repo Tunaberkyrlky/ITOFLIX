@@ -1,6 +1,7 @@
 ﻿using System;
 using ITOFLIX.Data;
 using ITOFLIX.DTO.Requests.MediaRequests;
+using ITOFLIX.DTO.Responses.MediaResponses;
 using ITOFLIX.Models;
 using ITOFLIX.Models.CompositeModels;
 
@@ -8,49 +9,57 @@ namespace ITOFLIX.DTO.Converters
 {
 	public class MediaConverter
 	{
-		public Media Convert(MediaCreateRequest mediaCreateRequest, int mediaId, ITOFLIXContext context)
+        MediaCategoryConverter _mediaCategoryConverter = new();
+        MediaActorConverter _mediaActorConverter = new();
+        MediaDirectorConverter _mediaDirectorConverter = new();
+        MediaRestrictionConverter _mediaRestrictionConverter = new();
+
+		public Media Convert(MediaCreateRequest mediaCreateRequest)
 		{
             List<MediaActor> mediaActors = new();
-            foreach (var Id in mediaCreateRequest.ActorIds)
+            if (mediaCreateRequest.ActorIds != null)
             {
-                MediaActor newMediaActor = new();
-                newMediaActor.ActorId = Id;
-                //newMediaActor.MediaId = mediaId;
-                mediaActors.Add(newMediaActor);
-                //context.MediaActors.Add(newMediaActor);
+                foreach (var Id in mediaCreateRequest.ActorIds)
+                {
+                    MediaActor newMediaActor = new();
+                    newMediaActor.ActorId = Id;
+                    mediaActors.Add(newMediaActor);
+                }
             }
 
 			List<MediaCategory> mediaCategories = new();
-			foreach (var Id in mediaCreateRequest.CategoryIds)
-			{
-                MediaCategory newMediaCategory = new();
-                newMediaCategory.CategoryId = Id;
-                //newMediaCategory.MediaId = mediaId;
-                mediaCategories.Add(newMediaCategory);
-                //context.MediaCategories.Add(newMediaCategory);
-			}
+            if(mediaCreateRequest.CategoryIds != null)
+            {
+                foreach (var Id in mediaCreateRequest.CategoryIds)
+                {
+                    MediaCategory newMediaCategory = new();
+                    newMediaCategory.CategoryId = Id;
+                    mediaCategories.Add(newMediaCategory);
+                }
+            }
 
             List<MediaDirector> mediaDirectors = new();
-            foreach (var Id in mediaCreateRequest.DirectorIds)
+            if(mediaCreateRequest.DirectorIds != null)
             {
-                MediaDirector newMediaDirector = new();                
-                newMediaDirector.DirectorId = Id;
-                //newMediaDirector.MediaId = mediaId;
-                mediaDirectors.Add(newMediaDirector);
-                //context.MediaDirectors.Add(newMediaDirector);
+                foreach (var Id in mediaCreateRequest.DirectorIds)
+                {
+                    MediaDirector newMediaDirector = new();
+                    newMediaDirector.DirectorId = Id;
+                    mediaDirectors.Add(newMediaDirector);
+                }
             }
 
             List<MediaRestriction> mediaRestrictions = new();
-            foreach (var Id in mediaCreateRequest.RestrictionIds)
+            if(mediaCreateRequest.RestrictionIds != null)
             {
-                MediaRestriction newMediaRestriction = new();
-                newMediaRestriction.RestrictionId = Id;
-                //newMediaRestriction.MediaId = mediaId;
-                mediaRestrictions.Add(newMediaRestriction);
-                //context.MediaRestrictions.Add(newMediaRestriction);
+                foreach (var Id in mediaCreateRequest.RestrictionIds)
+                {
+                    MediaRestriction newMediaRestriction = new();
+                    newMediaRestriction.RestrictionId = Id;
+                    mediaRestrictions.Add(newMediaRestriction);
+                }
             }
 
-            context.SaveChanges();
             Media newMedia = new()
 			{
 				Name = mediaCreateRequest.Name,
@@ -62,6 +71,33 @@ namespace ITOFLIX.DTO.Converters
 			};
             return newMedia;
 		}
+
+        public MediaGetResponse Convert(Media media)
+        {
+            MediaGetResponse newMediaResponse = new()
+            {
+                Id = media.Id,
+                Name = media.Name,
+                Description = media.Description,
+                Passive = media.Passive,
+                MediaActorIds = _mediaActorConverter.ConvertToActorId(media.MediaActors),
+                MediaCategoryIds = _mediaCategoryConverter.ConvertToCategoryId(media.MediaCategories),
+                MediaDirectorIds = _mediaDirectorConverter.ConvertToDirectorId(media.MediaDirectors),
+                MediaRestrictionsIds = _mediaRestrictionConverter.ConvertToRestrictionId(media.MediaRestrictions)
+            };
+            return newMediaResponse;
+        }
+
+        public List<MediaGetResponse> Convert(List<Media> medias)
+        {
+            List<MediaGetResponse> newMediaResponses = new();
+
+            foreach (var media in medias)
+            {
+                newMediaResponses.Add(Convert(media));
+            }
+            return newMediaResponses;
+        }
 	}
 }
 

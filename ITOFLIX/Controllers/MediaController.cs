@@ -12,6 +12,7 @@ using ITOFLIX.Models.CompositeModels;
 using System.Security.Claims;
 using ITOFLIX.DTO.Requests.MediaRequests;
 using ITOFLIX.DTO.Converters;
+using ITOFLIX.DTO.Responses.MediaResponses;
 
 namespace ITOFLIX.Controllers
 {
@@ -30,20 +31,42 @@ namespace ITOFLIX.Controllers
 
         // GET: api/Media
         [HttpGet]
-        public List<Media> GetMedia(bool includePassive = false)
+        [Authorize]
+        public List<MediaGetResponse> GetAllMedia(bool includePassive = false,
+            bool includeMediaCategories = false,
+            bool includeMediaActors = false,
+            bool includeMediaDirectors = false,
+            bool includeMediaRestrictions = false)
         {
             IQueryable<Media> media = _context.Media;
+
             if(includePassive == true)
             {
                 media = media.Where(m => m.Passive == true);
             }
-
-            return media.ToList();
+            if (includeMediaCategories == true)
+            {
+                media = media.Include(m => m.MediaCategories);
+            }
+            if (includeMediaActors == true)
+            {
+                media = media.Include(m => m.MediaActors);
+            }
+            if (includeMediaDirectors == true)
+            {
+                media = media.Include(m => m.MediaDirectors);
+            }
+            if (includeMediaRestrictions == true)
+            {
+                media = media.Include(m => m.MediaRestrictions);
+            }
+            return mediaConverter.Convert(media.ToList());
         }
 
         // GET: api/Media/5
         [HttpGet("{id}")]
-        public ActionResult<Media> GetMedia(int id)
+        [Authorize]
+        public ActionResult<MediaGetResponse> GetMedia(int id)
         {
             Media? media = _context.Media.Find(id);
 
@@ -52,12 +75,13 @@ namespace ITOFLIX.Controllers
                 return NotFound();
             }
 
-            return media;
+            return mediaConverter.Convert(media);
         }
 
         // PUT: api/Media/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize]
         public ActionResult PutMedia(int id, Media media)
         {
             if (id != media.Id)
@@ -102,14 +126,9 @@ namespace ITOFLIX.Controllers
         [HttpPost]
         public ActionResult PostMedia(MediaCreateRequest mediaCreateRequest)
         {
-            Media emptyMedia = new();
-            _context.Media.Add(emptyMedia);
-            _context.SaveChanges();
+            Media newMedia = mediaConverter.Convert(mediaCreateRequest);
 
-            Media newMedia = mediaConverter.Convert(mediaCreateRequest,emptyMedia.Id, _context);
-
-            emptyMedia = newMedia;
-            _context.Media.Update(emptyMedia);
+            _context.Media.Update(newMedia);
             _context.SaveChanges();
             return Ok();
         }
