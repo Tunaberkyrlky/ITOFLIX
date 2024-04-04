@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ITOFLIX.Data;
 using ITOFLIX.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ITOFLIX.Controllers
 {
@@ -23,6 +24,7 @@ namespace ITOFLIX.Controllers
 
         // GET: api/Directors
         [HttpGet]
+        [Authorize]
         public ActionResult<List<Director>> GetDirectors()
         {
           if (_context.Directors == null)
@@ -34,6 +36,7 @@ namespace ITOFLIX.Controllers
 
         // GET: api/Directors/5
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<Director> GetDirector(int id)
         {
           if (_context.Directors == null)
@@ -53,6 +56,7 @@ namespace ITOFLIX.Controllers
         // PUT: api/Directors/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize(Roles = "ContentAdmin")]
         public IActionResult PutDirector(int id, Director director)
         {
             if (id != director.Id)
@@ -85,6 +89,7 @@ namespace ITOFLIX.Controllers
         // POST: api/Directors
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "ContentAdmin")]
         public ActionResult<Director> PostDirector(Director director)
         {
           if (_context.Directors == null)
@@ -99,6 +104,7 @@ namespace ITOFLIX.Controllers
 
         // DELETE: api/Directors/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ContentAdmin")]
         public IActionResult DeleteDirector(int id)
         {
             if (_context.Directors == null)

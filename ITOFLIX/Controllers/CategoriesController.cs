@@ -24,6 +24,7 @@ namespace ITOFLIX.Controllers
 
         // GET: api/Categories
         [HttpGet]
+        [Authorize]
         public ActionResult<List<Category>> GetCategories()
         {
             return  _context.Categories.AsNoTracking().ToList();
@@ -31,6 +32,7 @@ namespace ITOFLIX.Controllers
 
         // GET: api/Categories/5
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult<Category> GetCategory(short id)
         {
             Category? category = _context.Categories.Find(id);

@@ -32,7 +32,8 @@ namespace ITOFLIX.Controllers
         // GET: api/Media
         [HttpGet]
         [Authorize]
-        public List<MediaGetResponse> GetAllMedia(bool includePassive = false,
+        public List<MediaGetResponse> GetAllMedia(
+            bool includePassive = false,
             bool includeMediaCategories = false,
             bool includeMediaActors = false,
             bool includeMediaDirectors = false,
@@ -81,7 +82,7 @@ namespace ITOFLIX.Controllers
         // PUT: api/Media/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(Roles = "ContentAdmin")]
         public ActionResult PutMedia(int id, Media media)
         {
             if (id != media.Id)
@@ -124,6 +125,7 @@ namespace ITOFLIX.Controllers
         // POST: api/Media
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "ContentAdmin")]
         public ActionResult PostMedia(MediaCreateRequest mediaCreateRequest)
         {
             Media newMedia = mediaConverter.Convert(mediaCreateRequest);
@@ -161,6 +163,7 @@ namespace ITOFLIX.Controllers
 
         // DELETE: api/Media/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ContentAdmin")]
         public ActionResult DeleteMedia(int id)
         {
             if (_context.Media == null)

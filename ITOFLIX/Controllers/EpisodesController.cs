@@ -136,6 +136,7 @@ namespace ITOFLIX.Controllers
         // POST: api/Episodes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize(Roles = "ContentAdmin")]
         public ActionResult<long> PostEpisode(Episode episode)
         {
           if (_context.Episodes == null)
@@ -150,6 +151,7 @@ namespace ITOFLIX.Controllers
 
         // DELETE: api/Episodes/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "ContentAdmin")]
         public ActionResult<string> DeleteEpisode(long id)
         {
             if (_context.Episodes == null)

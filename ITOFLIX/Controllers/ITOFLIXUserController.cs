@@ -42,7 +42,7 @@ namespace ITOFLIX.Controllers
 
         // GET: api/ITOFLIXUser
         [HttpGet]
-        //[Authorize(Roles = "Administrator")]
+        [Authorize(Roles = "Administrator")]
         public ActionResult<List<UserGetResponse>> GetUsers(bool includePassive = true)
         {
             IQueryable<ITOFLIXUser> users = _signInManager.UserManager.Users;
@@ -235,6 +235,7 @@ namespace ITOFLIX.Controllers
 
 
         [HttpPost("Logout")]
+        [Authorize]
         public void Logout()
         {
             _signInManager.SignOutAsync().Wait();

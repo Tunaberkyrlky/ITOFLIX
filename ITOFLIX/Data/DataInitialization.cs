@@ -1,4 +1,4 @@
-﻿
+﻿    
 using Microsoft.AspNetCore.Identity;
 using ITOFLIX.Models;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +36,7 @@ namespace ITOFLIX.Data
                 if (_context.Users.Count()==0)
                 {
                     CreateAdminUser();
+                    CreateContentAdminUser();
                 }
                 if(_context.Categories.Count() == 0)
                 {
@@ -67,12 +68,39 @@ namespace ITOFLIX.Data
             }
         }
 
+        public void CreateContentAdminUser()
+        {
+            IdentityResult identityResult;
+            if (_signInManager.UserManager.Users.Count() == 0)
+            {
+
+                UserCreateRequest newUserRequest = new UserCreateRequest()
+                {
+                    Name = "ContentAdmin",
+                    Email = "ContentAdmin@abc.com",
+                    PhoneNumber = "1234567890",
+                    BirthDate = DateTime.Now.Date,
+                    Password = "Admin123!"
+                };
+
+                UserConverter userConverter = new UserConverter();
+                ITOFLIXUser NewUser = userConverter.Convert(newUserRequest);
+
+                string adminUserPassword = "Admin123!";
+                identityResult = _signInManager.UserManager.CreateAsync(NewUser, adminUserPassword).Result;
+                _signInManager.UserManager.AddToRoleAsync(NewUser, "ContentAdmin");
+
+            }
+        }
 
         public void CreateRoles()
         {
             ITOFLIXRole iTOFLIXRole;
 
             iTOFLIXRole = new ITOFLIXRole("Administrator");
+            _roleManager.CreateAsync(iTOFLIXRole).Wait();
+
+            iTOFLIXRole = new ITOFLIXRole("ContentAdmin");
             _roleManager.CreateAsync(iTOFLIXRole).Wait();
         }
 
@@ -112,6 +140,12 @@ namespace ITOFLIX.Data
             Category category7 = new Category { Name = "Macera" };
             _context.Categories.Add(category7);
             Category category8 = new Category { Name = "Dram" };
+            _context.Categories.Add(category8);
+            Category category9 = new Category { Name = "Fantastik" };
+            _context.Categories.Add(category8);
+            Category category10 = new Category { Name = "Yerli" };
+            _context.Categories.Add(category8);
+            Category category11 = new Category { Name = "Yabancı" };
             _context.Categories.Add(category8);
 
             _context.SaveChanges();
