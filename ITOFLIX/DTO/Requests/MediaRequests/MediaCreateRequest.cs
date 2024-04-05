@@ -15,13 +15,13 @@ namespace ITOFLIX.DTO.Requests.MediaRequests
         [Required]
         public string? Description { get; set; }
 
-        public List<short>? CategoryIds { get; set; }
+        public List<short> CategoryIds { get; set; } = new List<short>();
 
-        public List<int>? ActorIds { get; set; }
+        public List<int> ActorIds { get; set; } = new List<int>();
 
-        public List<int>? DirectorIds { get; set; }
+        public List<int> DirectorIds { get; set; } = new List<int>();
 
-        public List<byte>? RestrictionIds { get; set; }
+        public List<byte> RestrictionIds { get; set; } = new List<byte>();
     }
 }
 

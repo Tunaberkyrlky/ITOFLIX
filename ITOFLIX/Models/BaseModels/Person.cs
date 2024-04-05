@@ -12,8 +12,6 @@ namespace ITOFLIX.Models.BaseModels
         [StringLength(200, MinimumLength = 2)]
         [Column(TypeName = "nvarchar(200)")]
         public string Name { get; set; } = "";
-
-        //public bool Passive { get; set; } = true;
     }
 }
 

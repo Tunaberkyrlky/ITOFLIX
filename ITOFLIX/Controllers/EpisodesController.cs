@@ -7,8 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using ITOFLIX.Models.CompositeModels;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
-
-
+using ITOFLIX.DTO.Converters;
+using ITOFLIX.DTO.Responses.EpisodeResponses;
+using ITOFLIX.DTO.Requests.EpisodeRequests;
 
 namespace ITOFLIX.Controllers
 {
@@ -19,6 +20,8 @@ namespace ITOFLIX.Controllers
         private readonly ITOFLIXContext _context;
         private readonly UserManager<ITOFLIXUser> _userManager;
 
+        EpisodeConverter _episodeConverter = new EpisodeConverter();
+
         public EpisodesController(ITOFLIXContext context, UserManager<ITOFLIXUser> userManager)
         {
             _context = context;
@@ -28,22 +31,22 @@ namespace ITOFLIX.Controllers
         // GET: api/Episodes
         [HttpGet]
         [Authorize]
-        public ActionResult<List<Episode>> GetEpisodes(int mediaId, byte seasonNumber ,bool includePassive = true)
+        public ActionResult<List<EpisodeGetResponse>> GetEpisodes(int mediaId, byte seasonNumber ,bool includePassive = false)
         {
             IQueryable<Episode> episodes = _context.Episodes;
             if(includePassive == false)
             {
                 episodes = episodes.Where(e => e.Passive == false);
             }
-            return episodes
-                .Where(e => e.MediaId == mediaId && e.SeasonNumber == seasonNumber)
-                .OrderBy(e => e.SeasonNumber).AsNoTracking().ToList();
+                episodes = episodes.Where(e => e.MediaId == mediaId && e.SeasonNumber == seasonNumber)
+                        .OrderBy(e => e.SeasonNumber);
+            return _episodeConverter.Convert(episodes.AsNoTracking().ToList());
         }
 
         // GET: api/Episodes/5
         [HttpGet("{id}")]
         [Authorize]
-        public ActionResult<Episode> GetEpisode(long id)
+        public ActionResult<EpisodeGetResponse> GetEpisode(long id)
         {
             Episode? episode = _context.Episodes.Find(id);
 
@@ -52,7 +55,7 @@ namespace ITOFLIX.Controllers
               return NotFound();
             }
 
-            return episode;
+            return _episodeConverter.Convert(episode);
         }
 
         [HttpGet("Watch")]
@@ -137,16 +140,17 @@ namespace ITOFLIX.Controllers
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         [Authorize(Roles = "ContentAdmin")]
-        public ActionResult<long> PostEpisode(Episode episode)
+        public ActionResult<long> PostEpisode(EpisodeCreateRequest episodeCreateRequest)
         {
           if (_context.Episodes == null)
           {
               return Problem("Entity set 'ITOFLIXContext.Episodes'  is null.");
           }
-            _context.Episodes.Add(episode);
+            Episode newEpisode = _episodeConverter.Convert(episodeCreateRequest);
+            _context.Episodes.Add(newEpisode);
             _context.SaveChanges();
 
-            return Ok("Episode created and an Id assigned: " + episode.Id);
+            return Ok("Episode created and an Id assigned: " + newEpisode.Id);
         }
 
         // DELETE: api/Episodes/5

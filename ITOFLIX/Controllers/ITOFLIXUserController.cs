@@ -230,7 +230,7 @@ namespace ITOFLIX.Controllers
                     medias = mediaQuery.ToList();
                 }
             }
-            return medias;
+            return Ok(medias);
         }
 
 

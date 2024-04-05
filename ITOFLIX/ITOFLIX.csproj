@@ -32,10 +32,8 @@
     <None Remove="DTO\Requests\MediaRequests\" />
     <None Remove="DTO\Responses\UserResponses\" />
     <None Remove="DTO\Responses\MediaResponses\" />
-    <None Remove="DTO\Responses\MediaCategoryResponses\" />
-    <None Remove="DTO\Responses\MediaActorResponses\" />
-    <None Remove="DTO\Responses\MediaDirectorGetResponses\" />
-    <None Remove="DTO\Responses\MediaRestrictionResponses\" />
+    <None Remove="DTO\Requests\EpisodeRequests\" />
+    <None Remove="DTO\Responses\EpisodeResponses\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
@@ -46,9 +44,7 @@
     <Folder Include="DTO\Requests\MediaRequests\" />
     <Folder Include="DTO\Responses\UserResponses\" />
     <Folder Include="DTO\Responses\MediaResponses\" />
-    <Folder Include="DTO\Responses\MediaCategoryResponses\" />
-    <Folder Include="DTO\Responses\MediaActorResponses\" />
-    <Folder Include="DTO\Responses\MediaDirectorGetResponses\" />
-    <Folder Include="DTO\Responses\MediaRestrictionResponses\" />
+    <Folder Include="DTO\Requests\EpisodeRequests\" />
+    <Folder Include="DTO\Responses\EpisodeResponses\" />
   </ItemGroup>
 </Project>

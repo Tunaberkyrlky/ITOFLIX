@@ -4,6 +4,7 @@ using ITOFLIX.Models;
 using Microsoft.EntityFrameworkCore;
 using ITOFLIX.DTO.Requests;
 using ITOFLIX.DTO.Converters;
+using ITOFLIX.DTO.Requests.MediaRequests;
 
 namespace ITOFLIX.Data
 {
@@ -12,6 +13,9 @@ namespace ITOFLIX.Data
         private readonly ITOFLIXContext _context;
         private readonly SignInManager<ITOFLIXUser> _signInManager;
         private readonly RoleManager<ITOFLIXRole> _roleManager;
+
+        MediaConverter _mediaConverter = new MediaConverter();
+
         public DataInitialization(ITOFLIXContext context, SignInManager<ITOFLIXUser> signInManager, RoleManager<ITOFLIXRole> roleManager)
         {
             _context = context;
@@ -20,7 +24,7 @@ namespace ITOFLIX.Data
             if (_context != null)
             {
                 _context.Database.Migrate();
-                if(_context.Restrictions.Count() == 0)
+                if (_context.Restrictions.Count() == 0)
                 {
                     CreateRestrictions();
                 }
@@ -33,22 +37,30 @@ namespace ITOFLIX.Data
                 {
                     CreateRoles();
                 }
-                if (_context.Users.Count()==0)
+                if (_context.Users.Count() == 0)
                 {
                     CreateAdminUser();
                     CreateContentAdminUser();
                 }
-                if(_context.Categories.Count() == 0)
+                if (_context.Categories.Count() == 0)
                 {
                     CreateCategories();
                 }
+                if (_context.Episodes.Count() == 0
+                    && _context.Actors.Count() == 0
+                    && _context.Directors.Count() == 0
+                    && _context.Media.Count() == 0)
+                {
+                    CreateExampleMedia();
+                }
+                _context.SaveChanges();
             }
         }
 
         public void CreateAdminUser()
         {
             IdentityResult identityResult;
-            if(_signInManager.UserManager.Users.Count() == 0)
+            if (_signInManager.UserManager.Users.Count() <= 2)
             {
                 UserCreateRequest newUserRequest = new UserCreateRequest()
                 {
@@ -62,16 +74,16 @@ namespace ITOFLIX.Data
                 UserConverter userConverter = new UserConverter();
                 ITOFLIXUser NewUser = userConverter.Convert(newUserRequest);
 
-                string adminUserPassword = "Admin123!"; 
-                identityResult =  _signInManager.UserManager.CreateAsync(NewUser, adminUserPassword).Result;
-                _signInManager.UserManager.AddToRoleAsync(NewUser, "Administrator");
+                string adminUserPassword = "Admin123!";
+                identityResult = _signInManager.UserManager.CreateAsync(NewUser, adminUserPassword).Result;
+                _signInManager.UserManager.AddToRoleAsync(NewUser, "Administrator").Wait();
             }
         }
 
         public void CreateContentAdminUser()
         {
             IdentityResult identityResult;
-            if (_signInManager.UserManager.Users.Count() == 0)
+            if (_signInManager.UserManager.Users.Count() <= 2)
             {
 
                 UserCreateRequest newUserRequest = new UserCreateRequest()
@@ -88,7 +100,7 @@ namespace ITOFLIX.Data
 
                 string adminUserPassword = "Admin123!";
                 identityResult = _signInManager.UserManager.CreateAsync(NewUser, adminUserPassword).Result;
-                _signInManager.UserManager.AddToRoleAsync(NewUser, "ContentAdmin");
+                _signInManager.UserManager.AddToRoleAsync(NewUser, "ContentAdmin").Wait();
 
             }
         }
@@ -123,7 +135,7 @@ namespace ITOFLIX.Data
 
         public void CreateCategories()
         {
-            Category category = new Category{Name = "Korku" };
+            Category category = new Category { Name = "Korku" };
             _context.Categories.Add(category);
             Category category1 = new Category { Name = "Animasyon" };
             _context.Categories.Add(category1);
@@ -142,14 +154,94 @@ namespace ITOFLIX.Data
             Category category8 = new Category { Name = "Dram" };
             _context.Categories.Add(category8);
             Category category9 = new Category { Name = "Fantastik" };
-            _context.Categories.Add(category8);
+            _context.Categories.Add(category9);
             Category category10 = new Category { Name = "Yerli" };
-            _context.Categories.Add(category8);
+            _context.Categories.Add(category10);
             Category category11 = new Category { Name = "Yabancı" };
-            _context.Categories.Add(category8);
+            _context.Categories.Add(category11);
 
             _context.SaveChanges();
         }
 
+        public void CreateExampleMedia()
+        {
+            //Media initialization Friends series as example
+
+            //Create example Actors
+            Actor actor = new Actor() { Name = "Jennifer Aniston" };
+            _context.Actors.Add(actor);
+            Actor actor1 = new Actor() { Name = "Matthew Perry" };
+            _context.Actors.Add(actor1);
+            Actor actor2 = new Actor() { Name = "David Schwimmer" };
+            _context.Actors.Add(actor2);
+            Actor actor3 = new Actor() { Name = "Courteney Cox" };
+            _context.Actors.Add(actor3);
+            Actor actor4 = new Actor() { Name = "Paul Rudd" };
+            _context.Actors.Add(actor4);
+            Actor actor5 = new Actor() { Name = "Tom Selleck" };
+            _context.Actors.Add(actor5);
+
+            _context.SaveChanges();
+
+            //Create example Directors
+            Director director = new Director() { Name = "David Crane" };
+            _context.Directors.Add(director);
+            Director director1 = new Director() { Name = "David Crane" };
+            _context.Directors.Add(director1);
+            _context.SaveChanges();
+            //Create example Media
+            MediaCreateRequest mediaCreateRequest = new MediaCreateRequest()
+            {
+                Name = "Friends",
+                Description = "string",
+                CategoryIds = { 3 },
+                ActorIds = {1,2,3,4,5,6},
+                DirectorIds = {1,2},
+                RestrictionIds = {13}
+            };
+            _context.Media.Add(_mediaConverter.Convert(mediaCreateRequest));
+            _context.SaveChanges();
+            //Create example Episodes
+            DateTime dt;
+            DateTime.TryParse("1994-01-01", out dt);
+            Episode episode = new Episode()
+            {
+                Title = "First Episode",
+                Description = "Friends Episode Description",
+                Duration = TimeSpan.FromMinutes(22),
+                SeasonNumber = 1,
+                EpisodeNumber = 1,
+                ReleaseDate = dt,
+                MediaId = 1,
+                Passive = false
+            };
+            _context.Episodes.Add(episode);
+            Episode episode1 = new Episode()
+            {
+                Title = "Second Episode",
+                Description = "Friends Episode Description",
+                Duration = TimeSpan.FromMinutes(22),
+                SeasonNumber = 1,
+                EpisodeNumber = 2,
+                ReleaseDate = dt,
+                MediaId = 1,
+                Passive = false
+            };
+            _context.Episodes.Add(episode1);
+            Episode episode2 = new Episode()
+            {
+                Title = "Third Episode",
+                Description = "Friends Episode Description",
+                Duration = TimeSpan.FromMinutes(22),
+                SeasonNumber = 1,
+                EpisodeNumber = 3,
+                ReleaseDate = dt,
+                MediaId = 1,
+                Passive = false
+            };
+            _context.Episodes.Add(episode);
+
+            _context.SaveChanges();
+        }
     }
 }
