@@ -221,6 +221,7 @@ namespace ITOFLIX.Controllers
                     //Sonrasında MediaCategories'i boş olmayan media'ları filtreliyoruz (m.MediaCategories!.Count > 0)
                     //Ayrıca bu kategoriye giren fakat kullanıcının izlemiş olduklarını da dışarıda bırakıyoruz (userWatcheds.Contains(m.Id) == false)
                     mediaQuery = _context.Media.Include(m => m.MediaCategories!.Where(mc => mc.CategoryId == mediaCategories.Key)).Where(m => m.MediaCategories!.Count > 0 && userWatcheds.Contains(m.Id) == false);
+                    mediaQuery = mediaQuery.Include(m=>m.MediaCategories!.Where(mc=>mc.CategoryId == mediaCategories.Key).Distinct());
                     if (user.Restrictions != null)
                     {
                         //to do

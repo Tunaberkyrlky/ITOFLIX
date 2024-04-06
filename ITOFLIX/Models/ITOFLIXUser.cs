@@ -37,7 +37,7 @@ namespace ITOFLIX.Models
                 {
                     return 18;
                 }
-				return null;
+				return 0;
             }
 		}
 	}

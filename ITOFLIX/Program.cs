@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using ITOFLIX.DTO.Converters;
+using System.Text.Json.Serialization;
 
 namespace ITOFLIX;
 
@@ -18,6 +19,10 @@ public class Program
 
         builder.Services.AddIdentity<ITOFLIXUser,ITOFLIXRole>().AddEntityFrameworkStores<ITOFLIXContext>().AddDefaultTokenProviders();
 
+        builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
+
 
 
         // Add services to the container.
@@ -27,7 +32,7 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
-        //If you are usin dependency injection on controller you have to add this.
+        //If you are using dependency injection on controller you have to add this.
         //builder.Services.AddScoped<MediaConverter>();
 
         var app = builder.Build();

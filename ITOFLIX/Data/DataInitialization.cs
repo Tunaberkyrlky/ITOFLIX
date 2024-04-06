@@ -189,6 +189,7 @@ namespace ITOFLIX.Data
             Director director1 = new Director() { Name = "David Crane" };
             _context.Directors.Add(director1);
             _context.SaveChanges();
+
             //Create example Media
             MediaCreateRequest mediaCreateRequest = new MediaCreateRequest()
             {
@@ -201,6 +202,7 @@ namespace ITOFLIX.Data
             };
             _context.Media.Add(_mediaConverter.Convert(mediaCreateRequest));
             _context.SaveChanges();
+
             //Create example Episodes
             DateTime dt;
             DateTime.TryParse("1994-01-01", out dt);
@@ -239,8 +241,78 @@ namespace ITOFLIX.Data
                 MediaId = 1,
                 Passive = false
             };
-            _context.Episodes.Add(episode);
+            _context.Episodes.Add(episode2);
+            Episode episode3 = new Episode()
+            {
+                Title = "Fourth Episode",
+                Description = "Friends Episode Description",
+                Duration = TimeSpan.FromMinutes(22),
+                SeasonNumber = 2,
+                EpisodeNumber = 4,
+                ReleaseDate = dt,
+                MediaId = 1,
+                Passive = false
+            };
+            _context.Episodes.Add(episode3);
+            Episode episode4 = new Episode()
+            {
+                Title = "Fifth Episode",
+                Description = "Friends Episode Description",
+                Duration = TimeSpan.FromMinutes(22),
+                SeasonNumber = 2,
+                EpisodeNumber = 5,
+                ReleaseDate = dt,
+                MediaId = 1,
+                Passive = false
+            };
+            _context.Episodes.Add(episode4);
 
+
+            //Media initialization The Great Gatsby series as example
+
+
+            //Create example Actors
+            Actor actor6 = new Actor() { Name = "Toby Stephens" };
+            _context.Actors.Add(actor6);
+            Actor actor7 = new Actor() { Name = "Francie Swift" };
+            _context.Actors.Add(actor7);
+            Actor actor8 = new Actor() { Name = "Mira Sorvino" };
+            _context.Actors.Add(actor8);
+            _context.SaveChanges();
+
+            //Create example Directors
+            Director director3 = new Director() { Name = "Robert Markowitz" };
+            _context.Directors.Add(director3);
+            _context.SaveChanges();
+
+            //Create example Media
+            MediaCreateRequest mediaCreateRequest2 = new MediaCreateRequest()
+            {
+                Name = "The Great Gatsby",
+                Description = "string",
+                CategoryIds = { 10,12 },
+                ActorIds = {  5, 7,8,9 },
+                DirectorIds = { 3 },
+                RestrictionIds = { 13 }
+            };
+            _context.Media.Add(_mediaConverter.Convert(mediaCreateRequest2));
+            _context.SaveChanges();
+
+            //Create example Episodes
+            DateTime dt2;
+            DateTime.TryParse("2000-03-29", out dt2);
+            Episode episode5 = new Episode()
+            {
+                Title = "The Great Gatsby",
+                Description = "The Great Gatsby Movie 2000",
+                Duration = TimeSpan.FromMinutes(90),
+                SeasonNumber = 1,
+                EpisodeNumber = 1,
+                ReleaseDate = dt2,
+                MediaId = 2,
+                Passive = false
+            };
+            _context.Episodes.Add(episode5);
             _context.SaveChanges();
         }
     }

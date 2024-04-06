@@ -88,7 +88,7 @@ namespace ITOFLIX.Controllers
 
         [HttpGet("Favorite")]
         [Authorize]
-        public ActionResult AddFavorite(long mediaId)
+        public ActionResult AddFavorite(int mediaId)
         {
             UserFavorite userFavorite = new UserFavorite();
             Media? media = _context.Media.Find(mediaId);

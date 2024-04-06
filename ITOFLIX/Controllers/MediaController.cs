@@ -67,16 +67,42 @@ namespace ITOFLIX.Controllers
         // GET: api/Media/5
         [HttpGet("{id}")]
         [Authorize]
-        public ActionResult<MediaGetResponse> GetMedia(int id)
+        public ActionResult<MediaGetResponse> GetMedia(
+            int id,
+            bool includePassive = false,
+            bool includeMediaCategories = false,
+            bool includeMediaActors = false,
+            bool includeMediaDirectors = false,
+            bool includeMediaRestrictions = false)
         {
-            Media? media = _context.Media.Find(id);
+            IQueryable<Media> media = _context.Media;
 
             if (media == null)
             {
                 return NotFound();
             }
-
-            return mediaConverter.Convert(media);
+            if (includePassive == true)
+            {
+                media = media.Where(m => m.Passive == true);
+            }
+            if (includeMediaCategories == true)
+            {
+                media = media.Include(m => m.MediaCategories);
+            }
+            if (includeMediaActors == true)
+            {
+                media = media.Include(m => m.MediaActors);
+            }
+            if (includeMediaDirectors == true)
+            {
+                media = media.Include(m => m.MediaDirectors);
+            }
+            if (includeMediaRestrictions == true)
+            {
+                media = media.Include(m => m.MediaRestrictions);
+            }
+             
+            return mediaConverter.Convert(media.Where(m => m.Id == id).FirstOrDefault());
         }
 
         // PUT: api/Media/5
@@ -137,7 +163,7 @@ namespace ITOFLIX.Controllers
 
         [HttpGet("Favorite")]
         [Authorize]
-        public ActionResult AddFavorite(long mediaId)
+        public ActionResult AddFavorite(int mediaId)
         {
             UserFavorite userFavorite = new UserFavorite();
             Media? media = _context.Media.Find(mediaId);
@@ -149,9 +175,9 @@ namespace ITOFLIX.Controllers
             }
             try
             {
-                userFavorite.MediaId = media.Id;
-                userFavorite.UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier));
-                _context.Media.Update(media);
+                userFavorite.MediaId = mediaId;
+                userFavorite.UserId = long.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                _context.UserFavorites.Add(userFavorite);
                 _context.SaveChanges();
                 return Ok();
             }
